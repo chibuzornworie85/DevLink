@@ -3,14 +3,38 @@
 import { Input, Select, notification } from "antd";
 import React, { useState } from "react";
 
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
+import YouTubeIcon from "../../../public/assests/icons/youtube.svg";
+import GitHubIcon from "../../../public/assests/icons/github.svg";
+import LinkedInIcon from "../../../public/assests/icons/linkedin.svg";
 
 interface Link {
   id: number;
   platform: string;
   url: string;
 }
+
+const { Option } = Select;
+
+type CustomOptionLabelProps = {
+  icon: StaticImageData;
+  label: string;
+};
+
+const CustomOptionLabel: React.FC<CustomOptionLabelProps> = ({
+  icon,
+  label,
+}) => (
+  <span style={{ display: "flex", alignItems: "center" }}>
+    <Image
+      src={icon}
+      alt={`${label} icon`}
+      style={{ marginRight: 8, width: 16, height: 16 }}
+    />
+    {label}
+  </span>
+);
 
 const DdesktopAddLinks = () => {
   const [links, setLinks] = useState<Link[]>([]);
@@ -96,20 +120,29 @@ const DdesktopAddLinks = () => {
 
                 <div className="flex flex-col gap-2">
                   {links.map((link) => (
-                    <React.Fragment key={link.id}>
-                      <div className="bg-[#EEEEEE] rounded-lg h-[40px] w-[237px] flex items-center px-[8px] text-nowrap overflow-hidden">
+                    <div
+                      key={link.id}
+                      className={`bg-[#EEEEEE] rounded-lg h-[40px] w-[237px] flex items-center justify-between px-[8px] text-nowrap overflow-hidde
+                        ${
+                          link.platform === "GitHub"
+                            ? "bg-[#000000] text-[#FFFFFF]"
+                            : link.platform === "YouTube"
+                            ? "bg-[#EE3939] text-[#FFFFFF]"
+                            : link.platform === "LinkedIn"
+                            ? "bg-[#2D68FF] text-[#FFFFFF]"
+                            : ""
+                        }`}
+                    >
+                     <Link href={link.url} target="_blank" className="w-full flex items-center justify-between">
                         {link.platform}
-                      </div>
-                      <div className="bg-[#EEEEEE] rounded-lg h-[40px] w-[237px] flex items-center px-[8px] text-nowrap overflow-hidden">
-                        {link.url}
-                      </div>
-                    </React.Fragment>
+                      </Link>
+                        <Image src='/assests/icons/arrow.svg' alt="arrow" width={16} height={16} />
+                    </div>
                   ))}
                   {Array(3 - links.length)
                     .fill(null)
                     .map((_, index) => (
                       <React.Fragment key={index}>
-                        <div className="bg-[#EEEEEE] rounded-lg h-[40px] w-[237px]"></div>
                         <div className="bg-[#EEEEEE] rounded-lg h-[40px] w-[237px]"></div>
                       </React.Fragment>
                     ))}
@@ -178,11 +211,6 @@ const DdesktopAddLinks = () => {
                     <Select
                       placeholder="Platform"
                       style={{ flex: 1 }}
-                      options={[
-                        { value: "jack", label: "Jack" },
-                        { value: "lucy", label: "Lucy" },
-                        { value: "Yiminghe", label: "yiminghe" },
-                      ]}
                       value={link.platform}
                       onChange={(value) =>
                         setLinks(
@@ -191,7 +219,20 @@ const DdesktopAddLinks = () => {
                           )
                         )
                       }
-                    />
+                    >
+                      <Option value="YouTube">
+                        <CustomOptionLabel icon={YouTubeIcon} label="YouTube" />
+                      </Option>
+                      <Option value="GitHub">
+                        <CustomOptionLabel icon={GitHubIcon} label="GitHub" />
+                      </Option>
+                      <Option value="LinkedIn">
+                        <CustomOptionLabel
+                          icon={LinkedInIcon}
+                          label="LinkedIn"
+                        />
+                      </Option>
+                    </Select>
                   </div>
                   <div className="flex flex-col">
                     <p className="font-[400] text-[12px] leading-[18px] text-[#333333]">

@@ -22,44 +22,38 @@ const Register:FC=()=>{
   const [isError, setIsError] = useState<boolean>(false)
   // const [file, setFile] = useState<File | null>(null);
 
-  const handleRegister = async (e: FormEvent) =>{
+  const handleRegister = async (e: FormEvent) => {
     e.preventDefault();
 
+
     try {
-      const usersRef = collection(db, "users");
-      const q = query(usersRef, where("email", "==", email));
-      const querySnapshot = await getDocs(q);
 
-      if (!querySnapshot.empty) {
-        toast.error("Email already exists");
+      await createUserWithEmailAndPassword(auth, email, password1);
+      const user = auth.currentUser;
+      console.log(user);
 
-      } else {
+      if (user) {
+        await setDoc(doc(db, 'users', user.uid), {
+          email: user.email,
+          firstname: name,
+          lastname: name,
+        });
 
-        await createUserWithEmailAndPassword(auth, email, password1);
-        const user = auth.currentUser;
-        console.log(user);
-
-        if (user) {
-          await setDoc(doc(db, 'users', user.uid), {
-            email: user.email,
-            firstname: name,
-            lastname: name,
-          });
-
-        }
-
-        toast.success("Successfully registered");
-        setTimeout(() => {
-          window.location.href = "/login";
-        }, 1000);
       }
+
+      toast.success("Successfully registered");
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1000);
+
 
     } catch (error) {
-        toast.error("Ensure all fields are correctly filled");
-        console.log(error);
-      }
+      console.log('error: ', error);
+
+      toast.error('user already exist')
     }
 
+  }
 
   return (
     <div className='bg-[#fafafa] flex items-center flex-col m-auto'>
